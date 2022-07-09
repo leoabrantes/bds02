@@ -16,6 +16,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.devsuperior.bds02.dto.CityDTO;
 import com.devsuperior.bds02.services.CityService;
+import com.devsuperior.bds02.services.exception.DatabaseException;
+import com.devsuperior.bds02.services.exception.ResourceNotFoundException;
 
 
 @RestController
@@ -39,16 +41,19 @@ public class CityController {
 		return ResponseEntity.created(uri).body(dto);
 	}
 	
-//	@PutMapping(value = "/{id}")
-//	public ResponseEntity<CategoryDTO> update(@PathVariable Long id, @RequestBody CategoryDTO dto){
-//		dto = service.update(id, dto);
-//		return ResponseEntity.ok().body(dto);
-//	}
-//	
+
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<CityDTO> delete(@PathVariable Long id){
+		try {
 		service.delete(id);
 		return ResponseEntity.noContent().build();
+		}
+		catch(ResourceNotFoundException e) {
+		return ResponseEntity.notFound().build();
+		}
+		catch(DatabaseException e) {
+		return ResponseEntity.badRequest().build();	
+		}
 	}
 	
 }
