@@ -13,10 +13,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.devsuperior.bds02.dto.CityDTO;
 import com.devsuperior.bds02.dto.EventDTO;
 import com.devsuperior.bds02.entities.City;
 import com.devsuperior.bds02.entities.Event;
+import com.devsuperior.bds02.repositories.CityRepository;
 import com.devsuperior.bds02.repositories.EventRepository;
 import com.devsuperior.bds02.services.exception.DatabaseException;
 import com.devsuperior.bds02.services.exception.ResourceNotFoundException;
@@ -26,6 +26,8 @@ public class EventService {
 	
 	@Autowired
 	private EventRepository repository;
+	
+	private CityRepository cityRepository;
 	
 	public List<EventDTO> findAll(){
 		List<Event> list = repository.findAll(Sort.by("name"));
@@ -66,12 +68,10 @@ public class EventService {
 	public EventDTO update(Long id, EventDTO dto) {
 		try {
 			Event entity = repository.getOne(id);
-			CityService cityService = new CityService();
-			CityDTO cityDTO = cityService.findById(dto.getCityId());
 			entity.setName(dto.getName());
 			entity.setDate(dto.getDate());
 			entity.setUrl(dto.getUrl());
-			entity.setCity(new City(cityDTO.getId(), cityDTO.getName()));
+			entity.setCity(cityRepository.getOne(dto.getCityId()));
 			entity = repository.save(entity);
 			return new EventDTO(entity);
 		}
