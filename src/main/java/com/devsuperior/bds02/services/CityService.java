@@ -32,10 +32,10 @@ public class CityService {
 	}
 	
 	@Transactional(readOnly = true)
-	public City findById(Long id) {
+	public CityDTO findById(Long id) {
 		Optional<City> obj = repository.findById(id);
 		City entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity Not Found"));
-		return entity;
+		return new CityDTO(entity);
 	}
 	
 	@Transactional
